@@ -10,6 +10,10 @@
 # https://pyspace.eu/ws/thorgate/ch/23/
 
 
+
+# https://www.programiz.com/python-programming/matrix
+
+
 equations = [[2, -1, 4],
              [3, 2, 13]]
 

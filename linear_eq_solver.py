@@ -63,7 +63,7 @@ def get_submatrix(matrix, i, j):
     
     submatrix = []
     for k in range(len(matrix)):
-        submatrix.append(matrix[k][:(j-1)] + matrix[k][(j):])
+        submatrix.append(matrix[k][:(j-1)] + matrix[k][j:])
     
     submatrix.pop(i-1)
 

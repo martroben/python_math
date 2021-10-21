@@ -68,16 +68,14 @@ def get_submatrix(matrix, i, j):
     submatrix.pop(i-1)
 
     return submatrix
-    
-    
-def cofactor_sign(i, j):
-    return (-1) ** (i + j)
+
 
 
 def get_cofactor(matrix, i, j):
     
     submatrix = get_submatrix(matrix, i, j)
-    cofactor = cofactor_sign(i, j) * get_determinant(submatrix)
+    cofactor_sign = (-1) ** (i + j)
+    cofactor = cofactor_sign * get_determinant(submatrix)
     
     return cofactor
 

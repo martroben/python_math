@@ -83,3 +83,6 @@ def get_determinant(matrix):
     return determinant
 
 print(get_determinant(mat3))
+
+
+# not invertible if determinant = 0

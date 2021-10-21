@@ -51,7 +51,22 @@ def get_2x2_det(matrix):
 print(get_2x2_det(get_coefs(equations)))
 
 
-def get_n-1_matrices(matrix)
+      
+      
+mat = [[1, 5, 3, 9], [2, 0, 4, 8], [6, 7, 5, 10], [0, -1, -2, -3]]
+mat2 = [[2, 3], [4, 5]]
+
+
+def get_submatrix(i, matrix):
     
-    for row in matrix:
-        
+    for k in range(1, len(matrix)):
+        matrix[k].pop(i)
+    
+    matrix.pop(0)
+    return matrix
+    
+def sign(col, row = 1):
+    return (-1) ** (row + col)
+    
+    
+print(sign(2))

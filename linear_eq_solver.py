@@ -74,6 +74,14 @@ def cofactor_sign(i, j):
     return (-1) ** (i + j)
 
 
+def get_cofactor(matrix, i, j):
+    
+    submatrix = get_submatrix(matrix, i, j)
+    cofactor = cofactor_sign(i, j) * get_determinant(submatrix)
+    
+    return cofactor
+
+
 def get_determinant(matrix):
     
     if len(matrix) == 1:
@@ -81,12 +89,10 @@ def get_determinant(matrix):
 
     determinant = 0
     for n in range(len(matrix)):
-        submatrix = get_submatrix(matrix, i = 1, j = n + 1)
-        cofactor = cofactor_sign(i = 1, j = n + 1) * get_determinant(submatrix)
-        determinant += matrix[0][n] * cofactor
+        determinant += matrix[0][n] * get_cofactor(matrix, i = 1, j = n + 1)
 
     return determinant
-
+  
 print(get_determinant(mat3))
 
 

@@ -58,11 +58,14 @@ mat3 =[[1, 3, 5, 9],
        [5, 2, 0, 9]]
 
 
-def get_submatrix(i, matrix):
+# i - rows, j - cols
+def get_submatrix(matrix, i, j):
     
     submatrix = []
-    for k in range(1, len(matrix)):
-        submatrix.append(matrix[k][:i] + matrix[k][(i+1):])
+    for k in range(len(matrix)):
+        submatrix.append(matrix[k][:(j-1)] + matrix[k][(j):])
+    
+    submatrix.pop(i-1)
 
     return submatrix
     
@@ -78,7 +81,7 @@ def get_determinant(matrix):
 
     determinant = 0
     for n in range(len(matrix)):
-        determinant += matrix[0][n] * cofactor_sign(n+1) * get_determinant(get_submatrix(n, matrix))
+        determinant += matrix[0][n] * cofactor_sign(n+1) * get_determinant(get_submatrix(matrix, i = 1, j = n))
 
     return determinant
 

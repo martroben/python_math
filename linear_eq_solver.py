@@ -67,7 +67,7 @@ def get_submatrix(i, matrix):
     return submatrix
     
     
-def sign(col, row = 1):
+def cofactor_sign(col, row = 1):
     return (-1) ** (row + col)
 
 
@@ -78,7 +78,7 @@ def get_determinant(matrix):
 
     determinant = 0
     for n in range(len(matrix)):
-        determinant += matrix[0][n] * sign(n+1) * get_determinant(get_submatrix(n, matrix))
+        determinant += matrix[0][n] * cofactor_sign(n+1) * get_determinant(get_submatrix(n, matrix))
 
     return determinant
 

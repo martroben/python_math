@@ -44,29 +44,42 @@ def get_consts(matrix):
 print(get_consts(equations))
 
 
-# Get determinant of a 2x2 matrix
-def get_2x2_det(matrix):
-    return matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1]
-    
-print(get_2x2_det(get_coefs(equations)))
+mat = [[1, 5, 3, 9],
+       [2, 0, 4, 8],
+       [6, 7, 5, 10],
+       [0, -1, -2, -3]]
 
+mat2 = [[2, 3],
+        [4, 5]]
 
-      
-      
-mat = [[1, 5, 3, 9], [2, 0, 4, 8], [6, 7, 5, 10], [0, -1, -2, -3]]
-mat2 = [[2, 3], [4, 5]]
+mat3 =[[1, 3, 5, 9],
+       [1, 3, 1, 7],
+       [4, 3, 9, 7],
+       [5, 2, 0, 9]]
 
 
 def get_submatrix(i, matrix):
     
+    submatrix = []
     for k in range(1, len(matrix)):
-        matrix[k].pop(i)
+        submatrix.append(matrix[k][:i] + matrix[k][(i+1):])
+
+    return submatrix
     
-    matrix.pop(0)
-    return matrix
     
 def sign(col, row = 1):
     return (-1) ** (row + col)
+
+
+def get_determinant(matrix):
     
-    
-print(sign(2))
+    if len(matrix) == 1:
+        return matrix[0][0]
+
+    determinant = 0
+    for n in range(len(matrix)):
+        determinant += matrix[0][n] * sign(n+1) * get_determinant(get_submatrix(n, matrix))
+
+    return determinant
+
+print(get_determinant(mat3))

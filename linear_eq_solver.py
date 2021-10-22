@@ -90,6 +90,19 @@ def get_determinant(matrix):
         determinant += matrix[0][n] * get_cofactor(matrix, i = 1, j = n + 1)
 
     return determinant
+ 
+
+def get_matrix_T(matrix):
+
+    matrix_T = []
+    n_i = n_j = range(len(matrix))
+    for i in n_i:
+        row_T = [matrix[j][i] for j in n_j]
+        matrix_T.append(row_T)
+
+    return matrix_T
+
+
   
 print(get_determinant(mat3))
 

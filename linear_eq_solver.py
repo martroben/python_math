@@ -149,6 +149,25 @@ def get_dot_product(vector1, vector2):
     return dot_product
 
 
+def multiply_square_matrices(matrix1, matrix2):
+    
+    n_vec = range(len(matrix1))
+    matrix_product = []
+    for i in n_vec:
+        
+        row = []
+        for j in n_vec:
+            vec1 = [matrix1[i][k] for k in n_vec]
+            vec2 = [matrix2[k][j] for k in n_vec]
+            element = get_dot_product(vec1, vec2)
+            row.append(element)
+        
+        matrix_product.append(row)
+        
+    return matrix_product
+  
+  
+  
 print(get_inverse_matrix(mat3))
 
 

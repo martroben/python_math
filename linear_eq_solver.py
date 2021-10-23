@@ -149,16 +149,29 @@ def get_dot_product(vector1, vector2):
     return dot_product
 
 
-def multiply_square_matrices(matrix1, matrix2):
+
+def multiply_matrices(matrix1, matrix2):
     
-    n_vec = range(len(matrix1))
+    mat1_n_cols = len(matrix1[0])
+    mat2_n_rows = len(matrix2)
+    
+    # If matrix dimensions don't match, matrixes can't be multiplied
+    if mat1_n_cols != mat2_n_rows:
+        return None
+    
+    product_n_rows = len(matrix1)
+    product_n_cols = len(matrix2[0])
+    
+    i_vec = range(product_n_rows)
+    j_vec = range(product_n_cols)
+    k_vec = range(mat2_n_rows)
     matrix_product = []
-    for i in n_vec:
+    for i in i_vec:
         
         row = []
-        for j in n_vec:
-            vec1 = [matrix1[i][k] for k in n_vec]
-            vec2 = [matrix2[k][j] for k in n_vec]
+        for j in j_vec:
+            vec1 = matrix1[i]
+            vec2 = [matrix2[k][j] for k in k_vec]
             element = get_dot_product(vec1, vec2)
             row.append(element)
         

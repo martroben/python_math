@@ -162,16 +162,13 @@ def multiply_matrices(matrix1, matrix2):
     product_n_rows = len(matrix1)
     product_n_cols = len(matrix2[0])
     
-    i_vec = range(product_n_rows)
-    j_vec = range(product_n_cols)
-    k_vec = range(mat2_n_rows)
     matrix_product = []
-    for i in i_vec:
+    for i in range(product_n_rows):
         
         row = []
-        for j in j_vec:
+        for j in range(product_n_cols):
             vec1 = matrix1[i]
-            vec2 = [matrix2[k][j] for k in k_vec]
+            vec2 = [matrix2[k][j] for k in range(mat2_n_rows)]
             element = get_dot_product(vec1, vec2)
             row.append(element)
         

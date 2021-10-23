@@ -190,15 +190,25 @@ def get_next_biggest(value, vector):
     
     
 
-# maxvalue_index = vec.index(max(vec))
-
-def next_combination(vec, at_pos, max_pos):
+def get_next_combination(vec, cur_pos, init_pos):
     
-    if at_pos == (len(vec) - 1):
-        return next_combination(vec, (max_pos - 1), max_pos)
+    if len(vec) == 1:
+        return vec
+    
+    # To handle the very first iteration eg. [0, 1, 2, 3]
+    if init_pos == (len(vec) - 1):
+        return get_next_combination(vec, cur_pos, (init_pos - 1))
+    
+    # To handle end of one position eg. [2, 3, 1, 0]
+    if cur_pos == (len(vec) - 1):
+        return get_next_combination(vec, (init_pos - 1), (init_pos - 1))
 
-    unchanging_part = vec[:(at_pos + 1)]
-    changing_part = vec[(at_pos + 1):]
+    unchanging_part = vec[:(cur_pos + 1)]
+    changing_part = vec[(cur_pos + 1):]
+    
+    if len(unchanging_part) != 0 and len(changing_part) != 0 and min(unchanging_part) > max(changing_part):
+        new_pos = changing_part.index(max(changing_part))
+        return unchanging_part + get_next_combination(changing_part, new_pos, new_pos)
     
     if changing_part[0] != max(changing_part):
         new_value = get_next_biggest(changing_part[0], changing_part)
@@ -207,10 +217,30 @@ def next_combination(vec, at_pos, max_pos):
         
         return result
     
-    return next_combination(vec, at_pos + 1, max_pos)
+    return get_next_combination(vec, cur_pos + 1, init_pos)
 
 
-print(next_combination(test, 0, 0))
+def factorial(n):
+
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+        
+    return result
+
+
+def get_position_combinations(n):
+
+    start_vec = [i for i in range(n)]
+    combinations = [start_vec]
+    
+    while len(combinations) < factorial(n):
+        
+        current_combination = combinations[-1]
+        maxvalue_index = current_combination.index(max(current_combination))
+        combinations.append(get_next_combination(current_combination, maxvalue_index, maxvalue_index))
+    
+    return combinations
   
   
   

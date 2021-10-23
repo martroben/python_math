@@ -177,6 +177,42 @@ def multiply_matrices(matrix1, matrix2):
     return matrix_product
   
   
+ def get_solution_vector(coef_matrix, const_vector):
+    return get_matrix_product(get_inverse_matrix(coef_matrix), const_vector)
+
+  
+ 
+def get_next_biggest(value, vector):
+    vector_ascending = sorted(vector)
+    value_index = vector_ascending.index(value)
+    
+    return vector_ascending[value_index + 1]
+    
+    
+
+# maxvalue_index = vec.index(max(vec))
+
+def next_combination(vec, at_pos, max_pos):
+    
+    if at_pos == (len(vec) - 1):
+        return next_combination(vec, (max_pos - 1), max_pos)
+
+    unchanging_part = vec[:(at_pos + 1)]
+    changing_part = vec[(at_pos + 1):]
+    
+    if changing_part[0] != max(changing_part):
+        new_value = get_next_biggest(changing_part[0], changing_part)
+        changing_part.remove(new_value)
+        result = unchanging_part + [new_value] + sorted(changing_part)
+        
+        return result
+    
+    return next_combination(vec, at_pos + 1, max_pos)
+
+
+print(next_combination(test, 0, 0))
+  
+  
   
 print(get_inverse_matrix(mat3))
 

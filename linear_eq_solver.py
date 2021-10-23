@@ -133,7 +133,21 @@ def get_inverse_matrix(matrix):
     inverse_matrix = scalar_x_matrix(1 / determinant, adjugate_matrix)
     
     return inverse_matrix
-   
+
+
+
+def get_dot_product(vector1, vector2):
+    
+    if len(vector1) != len(vector2):
+        return None
+    
+    dot_product = 0
+    n_vec = range(len(vector1))
+    for i in n_vec:
+        dot_product += vector1[i] * vector2[i]
+    
+    return dot_product
+
 
 print(get_inverse_matrix(mat3))
 

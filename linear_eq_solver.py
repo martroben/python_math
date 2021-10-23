@@ -92,19 +92,50 @@ def get_determinant(matrix):
     return determinant
  
 
-def get_matrix_T(matrix):
+def get_transpose_matrix(matrix):
 
     matrix_T = []
-    n_i = n_j = range(len(matrix))
-    for i in n_i:
-        row_T = [matrix[j][i] for j in n_j]
+    n_vec = range(len(matrix))
+    for i in n_vec:
+        row_T = [matrix[j][i] for j in n_vec]
         matrix_T.append(row_T)
 
     return matrix_T
 
 
-  
-print(get_determinant(mat3))
+def scalar_x_matrix(scalar, matrix):
+    
+    product = []
+    n_vec = range(len(matrix))
+    for i in n_vec:
+        product_row = [scalar * matrix[i][j] for j in n_vec]
+        product.append(product_row)
+    
+    return product
+
+
+def get_inverse_matrix(matrix):
+    
+    determinant = get_determinant(matrix)
+    
+    # Matrix is not invertible if the determinant is 0
+    if determinant == 0:
+        return None
+    
+    cofactor_matrix = []
+    n_vec = range(len(matrix))
+    for i in n_vec:
+        inverse_row = [get_cofactor(matrix, i + 1, j + 1) for j in n_vec]
+        cofactor_matrix.append(inverse_row)
+    
+    adjugate_matrix = get_transpose_matrix(cofactor_matrix)
+    
+    inverse_matrix = scalar_x_matrix(1 / determinant, adjugate_matrix)
+    
+    return inverse_matrix
+   
+
+print(get_inverse_matrix(mat3))
 
 
 # not invertible if determinant = 0

@@ -58,51 +58,27 @@ mat3 =[[1, 3, 5, 9],
        [5, 2, 0, 9]]
 
 
-# i - rows, j - cols
-def get_submatrix(matrix, i, j):
+
+######################
+# General operations #
+######################
+
+# Product of all elements in list
+def multiply_list(list):
     
-    submatrix = []
-    for k in range(len(matrix)):
-        submatrix.append(matrix[k][:(j-1)] + matrix[k][j:])
-    
-    submatrix.pop(i-1)
-
-    return submatrix
+    product = 1
+    for i in list:
+        product *= i
+        
+    return product
 
 
-
-def get_cofactor(matrix, i, j):
-    
-    submatrix = get_submatrix(matrix, i, j)
-    cofactor_sign = (-1) ** (i + j)
-    cofactor = cofactor_sign * get_determinant(submatrix)
-    
-    return cofactor
+# Multiply all elements of a vector (list) by a number
+def scalar_x_vector(scalar, vector):
+    return [scalar * vector[i] for i in range(len(vector))]
 
 
-def get_determinant(matrix):
-    
-    if len(matrix) == 1:
-        return matrix[0][0]
-
-    determinant = 0
-    for n in range(len(matrix)):
-        determinant += matrix[0][n] * get_cofactor(matrix, i = 1, j = n + 1)
-
-    return determinant
- 
-
-def get_transpose_matrix(matrix):
-
-    matrix_T = []
-    n_vec = range(len(matrix))
-    for i in n_vec:
-        row_T = [matrix[j][i] for j in n_vec]
-        matrix_T.append(row_T)
-
-    return matrix_T
-
-
+# Multiply all elements of a square matrix by a number
 def scalar_x_matrix(scalar, matrix):
     
     product = []
@@ -114,9 +90,96 @@ def scalar_x_matrix(scalar, matrix):
     return product
 
 
+# Dot product of two vectors
+def get_dot_product(vector1, vector2):
+    
+    if len(vector1) != len(vector2):
+        return None
+    
+    dot_product = 0
+    n_vec = range(len(vector1))
+    for i in n_vec:
+        dot_product += vector1[i] * vector2[i]
+    
+    return dot_product
+
+
+# Factorial of a number
+def factorial(n):
+
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+        
+    return result
+
+  
+  
+#####################
+# Matrix operations #
+#####################
+
+# Get i,j-th element of a square matrix (indexing starting from 0)
+# coordinates variable is a list [i, j]
+def get_matrix_element(matrix, coordinates):
+    return matrix[coordinates[0]][coordinates[1]]
+
+  
+def get_transpose_matrix(matrix):
+    
+    matrix_T = []
+    n_vec = range(len(matrix))
+    for i in n_vec:
+        row_T = [matrix[j][i] for j in n_vec]
+        matrix_T.append(row_T)
+    
+    return matrix_T
+
+
+# Get i,j submatrix
+# i - rows, j - cols (indexing starting from 1)
+def get_submatrix(matrix, i, j):
+    
+    submatrix = []
+    for k in range(len(matrix)):
+        submatrix.append(matrix[k][:(j-1)] + matrix[k][j:])
+    
+    submatrix.pop(i-1)
+    
+    return submatrix
+
+
+# Get i,j cofactor
+# indexing starting from 1
+def get_cofactor(matrix, i, j):
+    
+    submatrix = get_submatrix(matrix, i, j)
+    cofactor_sign = (-1) ** (i + j)
+    cofactor = cofactor_sign * get_determinant_nonrecursive(submatrix)
+    
+    return cofactor
+
+
+# Recursive function to calculate determinants
+# Can handle up to 6x6 matrices
+# Replaced by non-recursive version
+# def get_determinant(matrix):
+#     
+#     if len(matrix) == 1:
+#         return matrix[0][0]
+# 
+#     determinant = 0
+#     for n in range(len(matrix)):
+#         determinant += matrix[0][n] * get_cofactor(matrix, i = 1, j = n + 1)
+# 
+#     return determinant
+
+
+# Invert matrix:
+# Multiply transpose of cofactor matrix with reciprocal of the determinant
 def get_inverse_matrix(matrix):
     
-    determinant = get_determinant(matrix)
+    determinant = get_determinant_nonrecursive(matrix)
     
     # Matrix is not invertible if the determinant is 0
     if determinant == 0:
@@ -135,22 +198,8 @@ def get_inverse_matrix(matrix):
     return inverse_matrix
 
 
-
-def get_dot_product(vector1, vector2):
-    
-    if len(vector1) != len(vector2):
-        return None
-    
-    dot_product = 0
-    n_vec = range(len(vector1))
-    for i in n_vec:
-        dot_product += vector1[i] * vector2[i]
-    
-    return dot_product
-
-
-
- def multiply_matrices(matrix1, matrix2):
+# Multiply two matrices (don't have to be square)
+def multiply_matrices(matrix1, matrix2):
     
     mat1_n_cols = len(matrix1[0])
     mat2_n_rows = len(matrix2)
@@ -175,37 +224,6 @@ def get_dot_product(vector1, vector2):
         matrix_product.append(row)
         
     return matrix_product
-  
-  
-def get_solution_vector(coef_matrix, const_vector):
-    return get_matrix_product(get_inverse_matrix(coef_matrix), const_vector)
-
-  
-  
-###################################
-
-######################
-# General operations #
-######################
-
-# Get i,j-th element of a square matrix (indexing starting from 0)
-def get_matrix_element(matrix, coordinates):
-    return matrix[coordinates[0]][coordinates[1]]
- 
-
-# Product of all elements in list
-def multiply_list(list):
-    
-    product = 1
-    for i in list:
-        product *= i
-        
-    return product
-
-
-# Multiply all elements of a vector (list) by a number
-def scalar_x_vector(scalar, vector):
-    return [scalar * vector[i] for i in range(len(vector))]
 
   
   
@@ -309,8 +327,9 @@ def get_determinant_signs(n):
 # Matrix:  | a21  a22  a23 |
 #          | a31  a32  a33 |
 #
-# Factors: a11 a22 a33 | a11 a23 a32 | a12 a21 a33 | a12 a23 a31 | a13 a21 a32 | a13 a22 a31
-# Determinant sum (with signs): a11 a22 a33 - a11 a23 a32 - a12 a21 a33 + a12 a23 a31 + a13 a21 a32 - a13 a22 a31
+# Determinant factors: a11 a22 a33 | a11 a23 a32 | a12 a21 a33 | a12 a23 a31 | a13 a21 a32 | a13 a22 a31
+# Determinant sum (with signs): a11*a22*a33 - a11*a23*a32 - a12*a21*a33 + a12*a23*a31 + a13*a21*a32 - a13*a22*a31
+
 def get_determinant_nonrecursive(matrix):
     
     if len(matrix) == 1:
@@ -328,16 +347,15 @@ def get_determinant_nonrecursive(matrix):
 
     return determinant 
 
-  
-  
 
-def factorial(n):
 
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-        
-    return result
+##########################
+# Linear equation solver #
+##########################
+
+# Get solutions of linear equation by multiplying inverse to coefficients matrix with constants vector
+def get_solution_vector(coef_matrix, const_vector):
+    return multiply_matrices(get_inverse_matrix(coef_matrix), const_vector)
 
   
   

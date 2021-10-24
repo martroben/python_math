@@ -247,6 +247,26 @@ def multiply_list(list):
     return product
 
 
+def scalar_x_vector(scalar, vector):
+    return [scalar * vector[i] for i in range(len(vector))]
+
+
+def get_determinant_signs(n):
+
+    signs_vec = [1]
+    for s in range(1, n):
+        seed = [(-1) ** i for i in range(s+1)]
+        
+        new_iteration = []
+        for t in seed:
+            new_iteration += scalar_x_vector(t, result)
+    
+        signs_vec = new_iteration
+    
+    return signs_vec
+
+  
+ 
 def get_determinant_nonrecursive(matrix):
     
     if len(matrix) == 1:

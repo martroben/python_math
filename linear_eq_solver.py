@@ -225,8 +225,8 @@ def get_combinations(n):
 
 
 
+
 def get_matrix_element(matrix, coordinates):
-    
     return matrix[coordinates[0]][coordinates[1]]
 
 
@@ -259,7 +259,7 @@ def get_determinant_signs(n):
         
         new_iteration = []
         for t in seed:
-            new_iteration += scalar_x_vector(t, result)
+            new_iteration += scalar_x_vector(t, signs_vec)
     
         signs_vec = new_iteration
     
@@ -273,17 +273,16 @@ def get_determinant_nonrecursive(matrix):
         return matrix[0][0]
 
     combinations = get_combinations(len(matrix))
-    det_coordinates = [make_determinant_coordinates(comb) for comb in combinations]
+    det_coordinates = [make_determinant_coordinates(cmb) for cmb in combinations]
 
+    signs = get_determinant_signs(len(matrix))
+    
     determinant = 0
-    signs = []
-    for addend in det_coordinates:
-        signs += [(-1) ** (addend[0][0] + addend[0][1])]
-        factors = [get_matrix_element(matrix, coord) for coord in addend]
-        determinant += signs[0] * multiply_list(factors)
+    for i in range(len(det_coordinates)):
+        factors = [get_matrix_element(matrix, element) for element in det_coordinates[i]]
+        determinant += signs[i] * multiply_list(factors)
 
-    return signs
- 
+    return determinant 
 
 
 def factorial(n):

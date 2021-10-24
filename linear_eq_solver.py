@@ -150,7 +150,7 @@ def get_dot_product(vector1, vector2):
 
 
 
-def multiply_matrices(matrix1, matrix2):
+ def multiply_matrices(matrix1, matrix2):
     
     mat1_n_cols = len(matrix1[0])
     mat2_n_rows = len(matrix2)
@@ -177,47 +177,51 @@ def multiply_matrices(matrix1, matrix2):
     return matrix_product
   
   
- def get_solution_vector(coef_matrix, const_vector):
+def get_solution_vector(coef_matrix, const_vector):
     return get_matrix_product(get_inverse_matrix(coef_matrix), const_vector)
 
-  
  
-def get_next_biggest(value, vector):
-    vector_ascending = sorted(vector)
-    value_index = vector_ascending.index(value)
+# Use rule to get next value in combinations
+# Use the next biggest value in sequence to replace boundary value
+# Arrange others in ascending order
+def next_up(input):
     
-    return vector_ascending[value_index + 1]
+    old_boundary_rank = sorted(input).index(input[0])
+    new_boundary_value = sorted(input)[old_boundary_rank + 1]
+    other_values = sorted(input)
+    other_values.remove(new_boundary_value)
     
+    return [new_boundary_value] + other_values
     
 
-def get_next_combination(vec, cur_pos, init_pos):
+# Get combinations by using a rule defining which combinations follow each other
+# Start from the biggest value and move up/down the combination to find the boundary of descending values (or last value)
+# Rearrange descending part + boundary value according to the rule
+def get_next_combination(input):
     
-    if len(vec) == 1:
-        return vec
+    marker = input.index(max(input))
     
-    # To handle the very first iteration eg. [0, 1, 2, 3]
-    if init_pos == (len(vec) - 1):
-        return get_next_combination(vec, cur_pos, (init_pos - 1))
-    
-    # To handle end of one position eg. [2, 3, 1, 0]
-    if cur_pos == (len(vec) - 1):
-        return get_next_combination(vec, (init_pos - 1), (init_pos - 1))
-
-    unchanging_part = vec[:(cur_pos + 1)]
-    changing_part = vec[(cur_pos + 1):]
-    
-    if len(unchanging_part) != 0 and len(changing_part) != 0 and min(unchanging_part) > max(changing_part):
-        new_pos = changing_part.index(max(changing_part))
-        return unchanging_part + get_next_combination(changing_part, new_pos, new_pos)
-    
-    if changing_part[0] != max(changing_part):
-        new_value = get_next_biggest(changing_part[0], changing_part)
-        changing_part.remove(new_value)
-        result = unchanging_part + [new_value] + sorted(changing_part)
+    if input[marker:] == sorted(input[marker:], reverse = True):
         
-        return result
+        while input[marker:] == sorted(input[marker:], reverse = True):
+            marker -= 1
+    else:
+        while input[(marker + 1):] != sorted(input[(marker + 1):], reverse = True):
+            marker += 1
     
-    return get_next_combination(vec, cur_pos + 1, init_pos)
+    return input[:marker] + next_up(input[marker:])
+
+
+def get_position_combinations(n):
+
+    start_vec = [i for i in range(n)]
+    end_vec = sorted(start_vec, reverse = True)
+    combinations = [start_vec]
+    
+    while combinations[-1] != end_vec:
+        combinations.append(get_next_combination(combinations[-1]))
+    
+    return combinations
 
 
 def factorial(n):
@@ -228,20 +232,6 @@ def factorial(n):
         
     return result
 
-
-def get_position_combinations(n):
-
-    start_vec = [i for i in range(n)]
-    combinations = [start_vec]
-    
-    while len(combinations) < factorial(n):
-        
-        current_combination = combinations[-1]
-        maxvalue_index = current_combination.index(max(current_combination))
-        combinations.append(get_next_combination(current_combination, maxvalue_index, maxvalue_index))
-    
-    return combinations
-  
   
   
 print(get_inverse_matrix(mat3))

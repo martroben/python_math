@@ -212,7 +212,7 @@ def get_next_combination(input):
     return input[:marker] + next_up(input[marker:])
 
 
-def get_position_combinations(n):
+def get_combinations(n):
 
     start_vec = [i for i in range(n)]
     end_vec = sorted(start_vec, reverse = True)
@@ -222,6 +222,48 @@ def get_position_combinations(n):
         combinations.append(get_next_combination(combinations[-1]))
     
     return combinations
+
+
+
+def get_matrix_element(matrix, coordinates):
+    
+    return matrix[coordinates[0]][coordinates[1]]
+
+
+def make_determinant_coordinates(combination):
+    
+    coordinates = []
+    for i in range(len(combination)):
+        coordinates.append([i, combination[i]])
+    
+    return coordinates
+
+def multiply_list(list):
+    
+    product = 1
+    for i in list:
+        product *= i
+        
+    return product
+
+
+def get_determinant_nonrecursive(matrix):
+    
+    if len(matrix) == 1:
+        return matrix[0][0]
+
+    combinations = get_combinations(len(matrix))
+    det_coordinates = [make_determinant_coordinates(comb) for comb in combinations]
+
+    determinant = 0
+    signs = []
+    for addend in det_coordinates:
+        signs += [(-1) ** (addend[0][0] + addend[0][1])]
+        factors = [get_matrix_element(matrix, coord) for coord in addend]
+        determinant += signs[0] * multiply_list(factors)
+
+    return signs
+ 
 
 
 def factorial(n):

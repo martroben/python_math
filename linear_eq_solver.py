@@ -59,6 +59,163 @@ mat3 =[[1, 3, 5, 9],
 
 
 
+###########################
+# Input parsing functions #
+###########################
+
+test_strings = ["2x+3y=6",
+                "-z + k = - 7",
+                "3x + 0.002k = 0",
+                "1/2y-x/2=3/4",
+                "5*x = .1",
+                "y/-3 + z*2 + .4*z = 3/-4"]
+
+
+
+
+def get_multiplier_at(i_pos, str, decimal_chars):
+    
+    multiplier = ""
+    
+    while i_pos < len(str) \
+        and (str[i_pos].isdigit() \
+        or (str[i_pos] in decimal_chars)):
+        multiplier += str[i_pos]
+        i_pos += 1
+        
+    return multiplier
+
+
+def get_variable_at(i_pos, str):
+
+    variable = ""
+    
+    while i_pos < len(str) and str[i_pos].isalnum():
+        
+        variable += str[i_pos]
+        i_pos += 1
+        
+    return variable
+
+
+test = "1/4x-.7y-z+0"
+
+
+def parse_members(expression,
+                  decimal_chars = [".", ","],
+                  addition_chars = ["+", "-", "–"],
+                  negative_chars = ["-", "–"],
+                  multiplication_chars = ["*", "/"]):
+    
+    # [0]: sign, [1]: multiplier, [2]: variable name
+    empty_member = [1, 1, ""]
+    
+    members = [empty_member.copy()]
+    i_list = 0
+    i_pos = 0
+    
+    while i_pos in range(len(expression)):   
+        if expression[i_pos] in multiplication_chars:
+            
+            reciprocal = expression[i_pos] == "/"
+            
+            if expression[i_pos+1] in negative_chars:
+                members[i_list][0] *= -1
+                i_pos += 1
+            
+            i_pos += 1
+            
+            if expression[i_pos].isdigit() or (expression[i_pos] in decimal_chars):
+                multiplier = get_multiplier_at(i_pos, expression, decimal_chars)
+                multiplier_float = float(multiplier.replace(",", "."))
+                if reciprocal: multiplier_float = 1 / multiplier_float
+                members[i_list][1] *= multiplier_float
+                i_pos += len(multiplier)
+                
+            elif expression[i_pos].isalpha():
+                variable = get_variable_at(i_pos, expression)
+                members[i_list][2] = variable
+                i_pos += len(variable)
+                
+            else:
+                print("Error parsing expression '" + expression + "'!")
+                break
+            
+        elif expression[i_pos].isdigit() or (expression[i_pos] in decimal_chars):
+            multiplier = get_multiplier_at(i_pos, expression, decimal_chars)
+            multiplier_float = float(multiplier.replace(",", "."))
+            members[i_list][1] *= multiplier_float
+            i_pos += len(multiplier)
+            
+        elif expression[i_pos].isalpha():
+            variable = get_variable_at(i_pos, expression)
+            members[i_list][2] = variable
+            i_pos += len(variable)
+            
+        elif expression[i_pos] in addition_chars:
+
+            if i_pos != 0:
+                members += [empty_member.copy()]
+                i_list += 1
+            
+            if expression[i_pos] in negative_chars:
+                members[i_list][0] *= -1
+                
+            i_pos += 1
+        
+        else:
+            print("Error parsing expression '" + expression + "'!")
+            break
+
+    return members
+
+
+
+def consolidate_members(member_list, right_side = False):
+    
+    member_dict = {}
+    
+    for member in member_list:
+        if member[2] not in member_dict:
+            member_dict[member[2]] = member[0] * member[1] * (-1)**right_side
+        else:
+            member_dict[member[2]] += member[0] * member[1] * (-1)**right_side
+        
+    return member_dict
+
+
+
+def parse_equation(equation_str,
+                   space_chars = [" ", "_", "(", ")"]):
+    
+    # Remove whitespaces
+    for character in space_chars:
+        equation_str = equation_str.replace(character, "")
+    
+    equation_sides = equation_str.split("=")
+    
+    eq_left_side = consolidate_members(parse_members(equation_sides[0]))
+    eq_right_side = consolidate_members(parse_members(equation_sides[1]), right_side = True)
+    
+    unique_variables = set(list(eq_left_side.keys()) + list(eq_right_side.keys()))
+    
+    eq_standardized = {}
+    
+    for key in unique_variables:
+        eq_standardized[key] = sum([x for x in [eq_left_side.get(key), eq_right_side.get(key)] if x != None])
+        
+    return eq_standardized
+    
+
+print(list(map(parse_equation, test_strings)))
+
+
+parse_equation("y/-3 + z*2 + .4*z = 3/-4")
+
+
+
+
+
 ######################
 # General operations #
 ######################

@@ -59,17 +59,17 @@ mat3 =[[1, 3, 5, 9],
 
 
 
+
 ###########################
 # Input parsing functions #
 ###########################
 
-test_strings = ["2x+3y=6",
+test_strings = ["2x+3l=6",
                 "-z + k = - 7",
                 "3x + 0.002k = 0",
                 "1/2y-x/2=3/4",
                 "5*x = .1",
-                "y/-3 + z*2 + .4*z = 3/-4"]
-
+                "m/-3 + z*2 + .4*z = 3/-4"]
 
 
 
@@ -86,6 +86,7 @@ def get_multiplier_at(i_pos, str, decimal_chars):
     return multiplier
 
 
+  
 def get_variable_at(i_pos, str):
 
     variable = ""
@@ -97,8 +98,6 @@ def get_variable_at(i_pos, str):
         
     return variable
 
-
-test = "1/4x-.7y-z+0"
 
 
 def parse_members(expression,
@@ -207,11 +206,37 @@ def parse_equation(equation_str,
     return eq_standardized
     
 
-print(list(map(parse_equation, test_strings)))
+
+system_of_equations = list(map(parse_equation, test_strings))
+variables = set()
+
+# Detect unique variables
+for eq in system_of_equations:
+    for key in eq.keys():
+        variables.add(key)
+
+# Add zeros for missing variables in equations
+for eq in system_of_equations:
+    for var in variables:
+        if var not in eq:
+            eq[var] = 0
+
+# Collect constants to a vector
+constants_vector = [ dict[""] for dict in system_of_equations ]
+
+for eq in system_of_equations:
+    del eq[""]
 
 
-parse_equation("y/-3 + z*2 + .4*z = 3/-4")
+# Create a key-value dictionary for positions of variables in matrix
+variable_indexes = {}
+for i, var in enumerate(sorted(list(system_of_equations[0].keys()))):
+    variable_indexes[i] = var
 
+# Collect coefficients to a matrix
+coefficients_matrix = []
+for eq in system_of_equations:
+    coefficients_matrix += [[ eq[variable_indexes[i]] for i in range(len(variable_indexes)) ]]
 
 
 
@@ -271,6 +296,7 @@ def factorial(n):
     return result
 
   
+ 
   
 #####################
 # Matrix operations #
@@ -382,7 +408,8 @@ def multiply_matrices(matrix1, matrix2):
         
     return matrix_product
 
-  
+
+ 
   
 ########################
 # Finding combinations #
@@ -503,6 +530,7 @@ def get_determinant_nonrecursive(matrix):
         determinant += det_signs[i] * multiply_list(factors)
 
     return determinant 
+
 
 
 

@@ -64,15 +64,7 @@ mat3 =[[1, 3, 5, 9],
 # Input parsing functions #
 ###########################
 
-test_strings = ["2x+3l=6",
-                "-z + k = - 7",
-                "3x + 0.002k = 0",
-                "1/2y-x/2=3/4",
-                "5*x = .1",
-                "m/-3 + z*2 + .4*z = 3/-4"]
-
-
-
+# Parse a multiplier (number) from a given position of input string
 def get_multiplier_at(i_pos, str, decimal_chars):
     
     multiplier = ""
@@ -86,7 +78,8 @@ def get_multiplier_at(i_pos, str, decimal_chars):
     return multiplier
 
 
-  
+
+# Parse a variable name (character string) from a given position of input string
 def get_variable_at(i_pos, str):
 
     variable = ""
@@ -100,11 +93,9 @@ def get_variable_at(i_pos, str):
 
 
 
-def parse_members(expression,
-                  decimal_chars = [".", ","],
-                  addition_chars = ["+", "-", "–"],
-                  negative_chars = ["-", "–"],
-                  multiplication_chars = ["*", "/"]):
+# Parse sign, multiplier and variable name for each member of a single side of equation
+# Eg. "2x - 3y" --> [[1, 2, "x"], [-1, 3, "y"]]
+def parse_members(expression):
     
     # [0]: sign, [1]: multiplier, [2]: variable name
     empty_member = [1, 1, ""]
@@ -170,6 +161,8 @@ def parse_members(expression,
 
 
 
+# Consolidate left and right side of equation to a {variable: multiplier} dict
+# Eg. [[1, 2, "x"], [-1, 3, "y"]], [[1, 5, ]] --> {"x": 2, "y": -3, "": -5}
 def consolidate_members(member_list, right_side = False):
     
     member_dict = {}
@@ -184,8 +177,9 @@ def consolidate_members(member_list, right_side = False):
 
 
 
-def parse_equation(equation_str,
-                   space_chars = [" ", "_", "(", ")"]):
+# Parse equation string to a {variable: multiplier} dict
+# Eg. "2x - 3y = 5" --> {"x": 2, "y": -3, "": -5}
+def parse_equation(equation_str):
     
     # Remove whitespaces
     for character in space_chars:
@@ -204,39 +198,24 @@ def parse_equation(equation_str,
         eq_standardized[key] = sum([x for x in [eq_left_side.get(key), eq_right_side.get(key)] if x != None])
         
     return eq_standardized
-    
 
 
-system_of_equations = list(map(parse_equation, test_strings))
-variables = set()
 
-# Detect unique variables
-for eq in system_of_equations:
-    for key in eq.keys():
-        variables.add(key)
+# Find all unique variables and add zeros for missing variables in each equation
+# Eg. [{"a": 2, "": 5}, {"b": 3, "": 10}] --> [{"a": 2, "": 5, "b": 0}, {"b": 3, "": 10, "a": 0}]
+def standardize_equations(eq_sys):
 
-# Add zeros for missing variables in equations
-for eq in system_of_equations:
-    for var in variables:
-        if var not in eq:
-            eq[var] = 0
+    unique_variables = set()
+    for eq in eq_sys:
+        for key in eq.keys():
+            unique_variables.add(key)
 
-# Collect constants to a vector
-constants_vector = [ dict[""] for dict in system_of_equations ]
+    for eq in eq_sys:
+        for var in unique_variables:
+            if var not in eq:
+                eq[var] = 0
 
-for eq in system_of_equations:
-    del eq[""]
-
-
-# Create a key-value dictionary for positions of variables in matrix
-variable_indexes = {}
-for i, var in enumerate(sorted(list(system_of_equations[0].keys()))):
-    variable_indexes[i] = var
-
-# Collect coefficients to a matrix
-coefficients_matrix = []
-for eq in system_of_equations:
-    coefficients_matrix += [[ eq[variable_indexes[i]] for i in range(len(variable_indexes)) ]]
+    return eq_sys
 
 
 
@@ -469,7 +448,8 @@ def get_combinations(n):
     
     return combinations
 
-  
+
+
 
 ###########################################
 # Calculating determinant non-recursively #
@@ -501,11 +481,13 @@ def get_determinant_signs(n):
         signs_vec = new_iteration
     
     return signs_vec
-  
+
+
 
 # 1. Gets combinations of matrix elements that make up factors in determinant sum
 # 2. Gets signs of these factors
 # 3. Adds all up
+#
 # Eg.
 #          | a11  a12  a13 |
 # Matrix:  | a21  a22  a23 |
@@ -534,16 +516,73 @@ def get_determinant_nonrecursive(matrix):
 
 
 
-##########################
-# Linear equation solver #
-##########################
+###########################
+# Solving linear equation #
+###########################
 
 # Get solutions of linear equation by multiplying inverse to coefficients matrix with constants vector
 def get_solution_vector(coef_matrix, const_vector):
     return multiply_matrices(get_inverse_matrix(coef_matrix), const_vector)
 
-  
-  
+
+
+
+####################
+# Global variables #
+####################
+
+test_input = ["2x+3l=6",
+                "-z + k = - 7",
+                "3x + 0.002k = 0",
+                "1/2y-x/2=3/4",
+                "5*x = .1",
+                "m/-3 + z*2 + .4*z = 3/-4"]
+
+decimal_chars = [".", ","],
+addition_chars = ["+", "-", "–"],
+negative_chars = ["-", "–"],
+multiplication_chars = ["*", "/"]
+space_chars = [" ", "_", "(", ")"]
+
+
+
+
+##########################
+# Linear equation solver #
+##########################
+
+# Get list of {variable: multiplier} dictionaries for each input equation
+system_of_equations = list(map(parse_equation, test_input))
+
+
+# Standardize equations
+system_of_equations = standardize_equations(system_of_equations)
+
+
+# Separate constants to a vector and remove them from equations
+constants_vector = [ dict[""] for dict in system_of_equations ]
+
+only_variables = constants_vector.copy()
+for expression in only_variables:
+    del expression[""]
+
+
+# Create a key-index dictionary for positions of variables in matrix
+variable_indexes = {}
+for i, var in enumerate(sorted(list(only_variables[0].keys()))):
+    variable_indexes[i] = var
+
+
+# Collect coefficients to a matrix
+coefficients_matrix = []
+for expression in only_variables:
+    coefficients_matrix += [[ expression[variable_indexes[i]] for i in range(len(variable_indexes)) ]]
+
+
+# Solve linear equation
+solution_vec = get_solution_vector(coefficients_matrix, constants_vector)
+
+
 print(get_inverse_matrix(mat3))
 
 

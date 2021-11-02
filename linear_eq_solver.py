@@ -1,63 +1,13 @@
-# Write a function solve(*equations) that can solve systems of linear equations with 2, 3 to 6 variables. Equations will look like this:
-# '2x+3y=6', '4x+9y=15'
-
-# Return a dictionary with the results, i.e. {'x': 1.5, 'y': 1}. When solving higher order equation systems, variables can be named by any letter from a to z.
-
-# You can assume that all equations are refined as much as possible so you don't have to handle cases like 2x+5x-2x-55y=2 but it will be in the form 5x-55y=2. However, quantifiers before variables might include floats so you have to handle cases like 0.5x+2y-4.6z=-1555.5. When dealing with floats, round the number to 2 decimal places so that the tester would accept your result. I.e. 2.55935312 -> 2.56.
-
-# NB! numpy is not allowed.
-
 # https://pyspace.eu/ws/thorgate/ch/23/
-
-
-
-# https://www.programiz.com/python-programming/matrix
-
-
-equations = [[2, -1, 4],
-             [3, 2, 13]]
-
-
-# Get multipliers of variables
-def get_coefs(matrix):
-    
-    coef_matrix = []
-    
-    for row in matrix:
-        coef_matrix.append(row[:-1])
-    
-    return coef_matrix
-  
-print(get_coefs(equations))
-
-
-# Get constants
-def get_consts(matrix):
-
-    consts_vector = []
-    
-    for row in matrix:
-        consts_vector.append(row[-1])
-    
-    return consts_vector
-    
-print(get_consts(equations))
-
-
-mat = [[1, 5, 3, 9],
-       [2, 0, 4, 8],
-       [6, 7, 5, 10],
-       [0, -1, -2, -3]]
-
-mat2 = [[2, 3],
-        [4, 5]]
-
-mat3 =[[1, 3, 5, 9],
-       [1, 3, 1, 7],
-       [4, 3, 9, 7],
-       [5, 2, 0, 9]]
-
-
+#
+# Write a function solve(*equations) that can solve systems of linear equations with 2, 3 to 6 variables.
+# Equations will look like this: '2x+3y=6', '4x+9y=15'
+# Return a dictionary with the results, i.e. {'x': 1.5, 'y': 1}.
+# When solving higher order equation systems, variables can be named by any letter from a to z.
+# You can assume that all equations are refined as much as possible so you don't have to handle cases like 2x+5x-2x-55y=2 but it will be in the form 5x-55y=2.
+# However, quantifiers before variables might include floats so you have to handle cases like 0.5x+2y-4.6z=-1555.5.
+# When dealing with floats, round the number to 2 decimal places so that the tester would accept your result. I.e. 2.55935312 -> 2.56.
+# NB! numpy is not allowed.
 
 
 ###########################
@@ -78,7 +28,6 @@ def get_multiplier_at(i_pos, str, decimal_chars):
     return multiplier
 
 
-
 # Parse a variable name (character string) from a given position of input string
 def get_variable_at(i_pos, str):
 
@@ -90,7 +39,6 @@ def get_variable_at(i_pos, str):
         i_pos += 1
         
     return variable
-
 
 
 # Parse sign, multiplier and variable name for each member of a single side of equation
@@ -160,7 +108,6 @@ def parse_members(expression):
     return members
 
 
-
 # Consolidate left and right side of equation to a {variable: multiplier} dict
 # Eg. [[1, 2, "x"], [-1, 3, "y"]], [[1, 5, ]] --> {"x": 2, "y": -3, "": -5}
 def consolidate_members(member_list, right_side = False):
@@ -174,7 +121,6 @@ def consolidate_members(member_list, right_side = False):
             member_dict[member[2]] += member[0] * member[1] * (-1)**right_side
         
     return member_dict
-
 
 
 # Parse equation string to a {variable: multiplier} dict
@@ -198,7 +144,6 @@ def parse_equation(equation_str):
         eq_standardized[key] = sum([x for x in [eq_left_side.get(key), eq_right_side.get(key)] if x != None])
         
     return eq_standardized
-
 
 
 # Find all unique variables and add zeros for missing variables in each equation
@@ -481,7 +426,6 @@ def get_determinant_signs(n):
         signs_vec = new_iteration
     
     return signs_vec
-
 
 
 # 1. Gets combinations of matrix elements that make up factors in determinant sum

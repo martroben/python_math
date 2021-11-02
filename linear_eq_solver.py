@@ -262,7 +262,7 @@ def get_cofactor(matrix, i, j):
     
     submatrix = get_submatrix(matrix, i, j)
     cofactor_sign = (-1) ** (i + j)
-    cofactor = cofactor_sign * get_determinant_nonrecursive(submatrix)
+    cofactor = cofactor_sign * get_determinant(submatrix)
     
     return cofactor
 
@@ -270,7 +270,7 @@ def get_cofactor(matrix, i, j):
 # Recursive function to calculate determinants
 # Can handle up to 6x6 matrices
 # Replaced by non-recursive version
-# def get_determinant(matrix):
+# def get_determinant_recursive(matrix):
 #     
 #     if len(matrix) == 1:
 #         return matrix[0][0]
@@ -284,9 +284,10 @@ def get_cofactor(matrix, i, j):
 
 # Invert matrix:
 # Multiply transpose of cofactor matrix with reciprocal of the determinant
-def get_inverse_matrix(matrix):
+def get_inverse_matrix(matrix, determinant = None):
     
-    determinant = get_determinant_nonrecursive(matrix)
+    if determinant == None:
+        determinant = get_determinant(matrix)
     
     # Matrix is not invertible if the determinant is 0
     if determinant == 0:
@@ -342,7 +343,7 @@ def multiply_matrices(matrix1, matrix2):
 # the algorithm of finding next value in combinations:
 # Use the next biggest value in sequence to replace first (boundary) value
 # Then arrange others in ascending order
-# For example:
+# Eg.
 # [1, 3, 2, 0] --> [2, 0, 1, 3]
 # [3, 4, 1] --> [4, 1, 3]
 # [0, 1] --> [1, 0]
@@ -359,7 +360,7 @@ def next_up(input):
 # Get combinations using "the algorithm"
 # Start from the biggest value and move up/down the combination to find the boundary of last descending values (or last value)
 # Rearrange descending part + boundary value according to the next_up algorithm
-# For example:
+# Eg.
 # [4, 3, 0, 2, 1] - the boundary is on 0 (because 2 and 1 are in descending order) --> [4, 3, 1, 0, 2]
 # [0, 1, 2, 3, 4] - the boundary is on 3 --> [0, 1, 2, 4, 3]
 # [4, 2, 0, 3, 1] - boundary on 0 --> [4, 2, 1, 0, 3]
@@ -440,7 +441,7 @@ def get_determinant_signs(n):
 # Determinant factors: a11 a22 a33 | a11 a23 a32 | a12 a21 a33 | a12 a23 a31 | a13 a21 a32 | a13 a22 a31
 # Determinant sum (with signs): a11*a22*a33 - a11*a23*a32 - a12*a21*a33 + a12*a23*a31 + a13*a21*a32 - a13*a22*a31
 
-def get_determinant_nonrecursive(matrix):
+def get_determinant(matrix):
     
     if len(matrix) == 1:
         return matrix[0][0]
@@ -464,9 +465,97 @@ def get_determinant_nonrecursive(matrix):
 # Solving linear equation #
 ###########################
 
+# Checks if matrix is a square (nxn) matrix
+def is_square(coef_matrix):
+    
+    square = True
+    for row in coef_matrix:
+        if len(row) != len(coef_matrix):
+            square = False
+        
+    return square
+
+
 # Get solutions of linear equation by multiplying inverse to coefficients matrix with constants vector
-def get_solution_vector(coef_matrix, const_vector):
-    return multiply_matrices(get_inverse_matrix(coef_matrix), const_vector)
+def get_solution_vector(coef_matrix, const_vector, determinant = None):
+    return multiply_matrices(get_inverse_matrix(coef_matrix, determinant), const_vector)
+
+
+# Check if calculated values give the correct answer in linear equations
+def check_solution(coefs, consts, solution):
+    return [ round(i[0], 10) for i in multiply_matrices(coefs, solution) ] == [ round(i[0], 10) for i in consts ]
+
+
+# Turn solution vector to {var_name: solution} dictionary
+def solution_out(sol_vec, var_indexes):
+    
+    out = {}
+    for i, value in enumerate(sol_vec):
+        out[var_indexes[i]] = round(value[0], 2)
+    
+    return out
+
+
+# Take equation strings as arguments and return solution as a {var_name: solution} dictionary
+def solve(*equations):
+    
+    # Handle the case when input is a list of equation strings
+    if len(equations) == 1 and type(equations) is list:
+        equations = equations[0]
+    
+    input = [ i for i in equations]
+    
+    # Get list of {variable: multiplier} dictionaries for each input equation
+    system_of_equations = list(map(parse_equation, input))
+    
+    
+    # Standardize equations
+    system_of_equations = standardize_equations(system_of_equations)
+    
+    
+    # Separate constants to a vector and remove them from equations
+    constants_vector = [ [-1 * dict[""]] for dict in system_of_equations ]
+    
+    only_variables = [eq.copy() for eq in system_of_equations]
+    for expression in only_variables:
+        del expression[""]
+    
+    
+    # Create a key-index dictionary for positions of variable names in matrix
+    variable_indexes = {}
+    for i, var in enumerate(sorted(list(only_variables[0].keys()))):
+        variable_indexes[i] = var
+    
+    
+    # Collect coefficients to a matrix
+    coefficients_matrix = []
+    for expression in only_variables:
+        coefficients_matrix += [[ expression[variable_indexes[i]] for i in range(len(variable_indexes)) ]]
+    
+    
+    # Check solvability, solve linear equation, check soluton and format output to a {var_name: solution} dictionary
+    if is_square(coefficients_matrix):
+        determinant = get_determinant(coefficients_matrix)
+        
+        if determinant != 0:
+            solution_vec = get_solution_vector(coefficients_matrix, constants_vector, determinant)
+            
+            if check_solution(coefficients_matrix, constants_vector, solution_vec):
+                output = solution_out(solution_vec, variable_indexes)
+                
+                return output
+            
+            else:
+                print("Wrong solution! Found a solution but it doesn't seem to solve the equations:")
+                print(solution_out(solution_vec, variable_indexes))
+            
+        else:
+            print("No solution found for this system of equations! Determinant = 0:")
+            print(input)
+            
+    else:
+        print("No solution foundfor this system of equations! Doesn't give a square (nxn) coefficients matrix:")
+        print(input)
 
 
 
@@ -475,59 +564,41 @@ def get_solution_vector(coef_matrix, const_vector):
 # Global variables #
 ####################
 
-test_input = ["2x+3l=6",
-                "-z + k = - 7",
-                "3x + 0.002k = 0",
-                "1/2y-x/2=3/4",
-                "5*x = .1",
-                "m/-3 + z*2 + .4*z = 3/-4"]
-
-decimal_chars = [".", ","],
-addition_chars = ["+", "-", "–"],
-negative_chars = ["-", "–"],
+decimal_chars = [".", ","]
+addition_chars = ["+", "-", "–"]
+negative_chars = ["-", "–"]
 multiplication_chars = ["*", "/"]
 space_chars = [" ", "_", "(", ")"]
 
 
 
 
-##########################
-# Linear equation solver #
-##########################
+##########
+# ON RUN #
+##########
 
-# Get list of {variable: multiplier} dictionaries for each input equation
-system_of_equations = list(map(parse_equation, test_input))
+test_input1 = ["2x+3l=6",
+              "-z + k = - 7",
+              "3x + 0.002k = 0",
+              "1/2y-x/2=3/4",
+              "5*x = .1",
+              "m/-3 + z*2 + .4*z = 3/-4"]
 
+test_input2 = ["2x + y = 3",
+               "-.5x = 1"]
 
-# Standardize equations
-system_of_equations = standardize_equations(system_of_equations)
+test_input3 = ["3x + y = 0", "4z = 8"]
 
+test_input4 = ["3a + 5b - 23c + 9e + f + 8.5g + 0.5h + 5i = 40",
+               "32a + b + 10c + 2e - 15f + 6g + 22h + 9i = -2",
+               "-a + 16b + 5c - 19e + 2f - 8g + 11h - 2i = 52",
+               "30a - 2b + 9c + 4e - 32f + 11g + 35h + 26i = 3",
+               "24a + 12b + 7c + 38e - 2f + 34g - 28h + 7i = 21",
+               "a + 22b - 3c + 19e + 8f - 4g + 41h + 13i = 0",
+               "8a + 31b + 4c + 41e + 3f + 5g + 25h + i = 11",
+               "-32a + 2b - c + 5e + 24f - 3g + 22h + 17i = 9"]
 
-# Separate constants to a vector and remove them from equations
-constants_vector = [ dict[""] for dict in system_of_equations ]
-
-only_variables = constants_vector.copy()
-for expression in only_variables:
-    del expression[""]
-
-
-# Create a key-index dictionary for positions of variables in matrix
-variable_indexes = {}
-for i, var in enumerate(sorted(list(only_variables[0].keys()))):
-    variable_indexes[i] = var
-
-
-# Collect coefficients to a matrix
-coefficients_matrix = []
-for expression in only_variables:
-    coefficients_matrix += [[ expression[variable_indexes[i]] for i in range(len(variable_indexes)) ]]
+test_input5 = "3a + 3a = -3"
 
 
-# Solve linear equation
-solution_vec = get_solution_vector(coefficients_matrix, constants_vector)
-
-
-print(get_inverse_matrix(mat3))
-
-
-# not invertible if determinant = 0
+solve(test_input5)

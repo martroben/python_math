@@ -14,6 +14,20 @@
 # Input parsing functions #
 ###########################
 
+# Return characters from list of strings that are not alphanumeric and not in known_chars
+def unknown_input_chars(str_list, known_chars):
+    
+    unknown_chars = []
+    print(str_list[0])
+    for str in str_list:
+        for char in str:
+            if not(char in known_chars or char.isalnum()):
+                unknown_chars += char
+    
+    return unknown_chars
+
+
+
 # Parse a multiplier (number) from a given position of input string
 def get_multiplier_at(i_pos, str, decimal_chars):
     
@@ -500,10 +514,16 @@ def solution_out(sol_vec, var_indexes):
 def solve(*equations):
     
     # Handle the case when input is a list of equation strings
-    if len(equations) == 1 and type(equations) is list:
+    if len(equations) == 1 and type(equations[0]) is list:
         equations = equations[0]
-    
+
     input = [ i for i in equations]
+
+    bad_chars = unknown_input_chars(input, known_characters)
+    if len(bad_chars) > 0:
+        print("Unrecognized characters found in input: " + str(bad_chars))
+        
+        return
     
     # Get list of {variable: multiplier} dictionaries for each input equation
     system_of_equations = list(map(parse_equation, input))
@@ -568,7 +588,8 @@ decimal_chars = [".", ","]
 addition_chars = ["+", "-", "–"]
 negative_chars = ["-", "–"]
 multiplication_chars = ["*", "/"]
-space_chars = [" ", "_", "(", ")"]
+space_chars = [" ", "_"]
+known_characters = decimal_chars + addition_chars + negative_chars + multiplication_chars + space_chars + ["="]
 
 
 
@@ -577,6 +598,7 @@ space_chars = [" ", "_", "(", ")"]
 # ON RUN #
 ##########
 
+# Test inputs
 test_input1 = ["2x+3l=6",
               "-z + k = - 7",
               "3x + 0.002k = 0",
@@ -600,5 +622,9 @@ test_input4 = ["3a + 5b - 23c + 9e + f + 8.5g + 0.5h + 5i = 40",
 
 test_input5 = "3a + 3a = -3"
 
+test_input6 = ["&/(.0af!", "34x + 2 ' 3"]
 
-solve(test_input5)
+
+# Call function
+solve(test_input4)
+

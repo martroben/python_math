@@ -597,7 +597,7 @@ def solve(*equations):
             print(input)
             
     else:
-        print("No solution foundfor this system of equations! Doesn't give a square (nxn) coefficients matrix:")
+        print("No solution found for this system of equations! Doesn't give a square (nxn) coefficients matrix:")
         print(input)
 
 
@@ -642,6 +642,7 @@ test_input5 = "3a + 3a = -3"
 
 test_input6 = ["&/(.0af!", "34x + 2 ' 3"]
 
+test_input7 = ["x + 2y + 3z = 1", "2x + 4y + 6z = 4", "-3x - 6y + z = 11"]
 
 # Call function
 solve(test_input1)

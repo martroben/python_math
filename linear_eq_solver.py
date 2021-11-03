@@ -18,14 +18,12 @@
 def unknown_input_chars(str_list, known_chars):
     
     unknown_chars = []
-    print(str_list[0])
     for str in str_list:
         for char in str:
             if not(char in known_chars or char.isalnum()):
                 unknown_chars += char
     
     return unknown_chars
-
 
 
 # Parse a multiplier (number) from a given position of input string

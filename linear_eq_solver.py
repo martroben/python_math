@@ -1,13 +1,38 @@
-# https://pyspace.eu/ws/thorgate/ch/23/
-#
-# Write a function solve(*equations) that can solve systems of linear equations with 2, 3 to 6 variables.
-# Equations will look like this: '2x+3y=6', '4x+9y=15'
-# Return a dictionary with the results, i.e. {'x': 1.5, 'y': 1}.
-# When solving higher order equation systems, variables can be named by any letter from a to z.
-# You can assume that all equations are refined as much as possible so you don't have to handle cases like 2x+5x-2x-55y=2 but it will be in the form 5x-55y=2.
-# However, quantifiers before variables might include floats so you have to handle cases like 0.5x+2y-4.6z=-1555.5.
-# When dealing with floats, round the number to 2 decimal places so that the tester would accept your result. I.e. 2.55935312 -> 2.56.
-# NB! numpy is not allowed.
+#######################################################################################################
+##                                                                                                   ##
+##  Script name: linear_eq_solver.py                                                                 ##
+##  Purpose of script: Linear equation solver for a Python CodeClub Estonia challenge                ##
+##  Author: Mart Roben                                                                               ##
+##  Date Created: 3 Nov 2021                                                                         ##
+##                                                                                                   ##
+##  Copyright: BSD-3-Clause                                                                          ##
+##  https://github.com/martroben/linear_eq_solver                                                    ##
+##                                                                                                   ##
+##  Contact: fb.com/mart.roben                                                                       ##
+##                                                                                                   ##
+##  Challenge description:                                                                           ##
+##  https://pyspace.eu/ws/thorgate/ch/23/                                                            ##
+##                                                                                                   ##
+##  Write a function solve(*equations) that can solve systems of linear equations                    ##
+##  with 2, 3 to 6 variables.                                                                        ##
+##  Equations will look like this: '2x+3y=6', '4x+9y=15'                                             ##
+##  Return a dictionary with the results, i.e. {'x': 1.5, 'y': 1}.                                   ##
+##  When solving higher order equation systems, variables can be named by any letter from a to z.    ##
+##  You can assume that all equations are refined as much as possible so you don't have to handle    ##
+##  cases like 2x+5x-2x-55y=2 but it will be in the form 5x-55y=2.                                   ##
+##  However, quantifiers before variables might include floats so you have to handle                 ##
+##  cases like 0.5x+2y-4.6z=-1555.5.                                                                 ##
+##  When dealing with floats, round the number to 2 decimal places so that the tester would accept   ##
+##  your result. I.e. 2.55935312 -> 2.56.                                                            ##
+##  NB! numpy is not allowed.                                                                        ##
+##                                                                                                   ##
+##  Extra challenges for fun:                                                                        ##
+##  No imports                                                                                       ##
+##  Handle linear equations with more than 6 variables (ie. no recursion)                            ##
+##  Handle input ["2x+3l=6", "-z + j = - 7", "3x + 0.002k = 0", "1/2y-x/2=3/4", "5*x = .1",          ##
+##                "m/-3 + z*2 + .4*z = 3/-4", "j = 3j - k"]                                          ##
+##                                                                                                   ##
+#######################################################################################################
 
 
 ###########################
@@ -597,12 +622,7 @@ known_characters = decimal_chars + addition_chars + negative_chars + multiplicat
 ##########
 
 # Test inputs
-test_input1 = ["2x+3l=6",
-              "-z + k = - 7",
-              "3x + 0.002k = 0",
-              "1/2y-x/2=3/4",
-              "5*x = .1",
-              "m/-3 + z*2 + .4*z = 3/-4"]
+test_input1 = ["2x+3l=6", "-z + j = - 7", "3x + 0.002k = 0", "1/2y-x/2=3/4", "5*x = .1", "m/-3 + z*2 + .4*z = 3/-4", "j = 3j - k"]
 
 test_input2 = ["2x + y = 3",
                "-.5x = 1"]
@@ -624,5 +644,5 @@ test_input6 = ["&/(.0af!", "34x + 2 ' 3"]
 
 
 # Call function
-solve(test_input4)
+solve(test_input1)
 

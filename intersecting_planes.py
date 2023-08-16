@@ -5,15 +5,15 @@ import numpy as np
 
 # Define plane equations
 def plane1(x: float, y: float) -> float:
-    return 2*x + 3*y + 1
+    return 3*x + 2*y + 1
 
 
 def plane2(x: float, y: float) -> float:
-    return -x + 17*y - 3
+    return 3*x - 40*y + 6
 
 
 def plane3(x: float, y: float) -> float:
-    return 40*x - 16
+    return 3*x + 40*y - 16
 
 
 # Set x and y ranges
@@ -26,9 +26,9 @@ z_values2 = np.copy(z_values1)
 z_values3 = np.copy(z_values1)
 for x, i_x in enumerate(x_values):
     for y, i_y in enumerate(y_values):
-        z_values1[i_x, i_y] = plane1(x, y)
-        z_values2[i_x, i_y] = plane2(x, y)
-        z_values3[i_x, i_y] = plane3(x, y)
+        z_values1[i_y, i_x] = plane1(x, y)
+        z_values2[i_y, i_x] = plane2(x, y)
+        z_values3[i_y, i_x] = plane3(x, y)
 
 # Create plotly surface objects
 colorscale = "Viridis"

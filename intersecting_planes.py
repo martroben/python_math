@@ -5,27 +5,28 @@ import numpy as np
 
 # Define plane equations
 def plane1(x: float, y: float) -> float:
-    return 3*x + 2*y + 1
+    return 1*x + 2*y + 3
 
 
 def plane2(x: float, y: float) -> float:
-    return 3*x - 40*y + 6
+    return 1*x - 6*y
 
 
 def plane3(x: float, y: float) -> float:
-    return 3*x + 40*y - 16
+    return 1*x + 12*y - 15
 
 
-# Set x and y ranges
-x_values = [0, 1]
-y_values = [0, 1]
+# Set x and y values and z range
+x_values = [-3, 3]
+y_values = [-3, 3]
+z_range = [-10, 15]
 
 # Calculate z values
 z_values1 = np.zeros((len(x_values), len(y_values)))
 z_values2 = np.copy(z_values1)
 z_values3 = np.copy(z_values1)
-for x, i_x in enumerate(x_values):
-    for y, i_y in enumerate(y_values):
+for i_x, x in enumerate(x_values):
+    for i_y, y in enumerate(y_values):
         z_values1[i_y, i_x] = plane1(x, y)
         z_values2[i_y, i_x] = plane2(x, y)
         z_values3[i_y, i_x] = plane3(x, y)
@@ -75,7 +76,7 @@ figure.update_layout(
         # Set ranges
         xaxis=dict(range=x_values),
         yaxis=dict(range=y_values),
-        zaxis=dict(range=[-10, 10])))
+        zaxis=dict(range=z_range)))
 
 # Display plot
 figure.show()
